@@ -1,0 +1,15 @@
+<!-- <script src"url""> -->
+HTML parses parses the DOM and when encountered this script tag, it stop loads
+the script froms erver and then executes it and continues HTML parsing after
+this
+<!-- <script async src"url""> -->
+HTML parses parses the DOM and when encountered this async script tag, it loads
+the scripts paralelly without stopping HTML parsing and once the script is
+loaded it stops parsing and executes the script after after that it continues
+HTML parsing
+<!-- <script defer src"url""> -->
+HTML parses parses the DOM and when encountered this defer script tag, it loads
+the scripts paralelly without stopping HTML parsing and after finishing parsing
+it executes the scripts defer executes all the scripts in order but async dosent
+follow the order. So it is prefered to use defer of order is important and if
+there is dependency between script tags

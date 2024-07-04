@@ -1,0 +1,107 @@
+React alone dosen't make our app fast (its a small piece of javascript code), there are lot of other things (packages) that comes with create-react-app that bundles, minifies, compressesgit init, chaches, optimizes images, code splits etc.. and makes the app fast and production ready
+
+To configure the remote git repository (which is created on github by clicking create new repository) to our project, follow below steps
+git init - To convert our local code into a git repository
+git branch -M main - By default main branch is "master". So to make the main branch as "main" use this command
+Create readme file (README.md) if you dint add it while create git repository on github
+Now commit and push your local code in your local git repository to the remote git repository. But your local git does not know what is remote repository. So use below command (you can copy this command from your remote git repository steps, it will be mentioned there clearly)
+git remote add origin git@github.com:sakethkota731/namaste-react.git
+Now push the code to git using below commands
+git add .
+git commit -m "episode-01"
+git push origin main
+(origin means to the remote repository, it means push to the remote repository main branch)
+
+npm init - (It brings npm into our code, so package.json file will be created with this command)
+
+Versions
+2.8.3 - in this 2 is major version, 8 in minor versin, 3 is patch version.
+If there is any patch/bug fix which dosent require developers to change code we upgrade patch version.
+If there is any new functional or minor changes like that which dosent require developers to change code we upgrade minor version.
+If there is any existing functional changes or major changes like that which requires developers to change code we upgrade major version.
+^2.8.3 - this means it is not fixed and if there is minor changes (upto minor version changes) our version can get updated in package.json. If there is any change till 2.9.9 it will get upgraded automatically to that version (to the latest upto limit) after npm i
+~2.8.3 - this means it is not fixed and if there is patch fix (upto patch version changes) our version can get updated in package.json. If there is any change till 2.8.9 it will get upgraded automatically to that version (to the latest upto limit) after npm i
+2.8.3 - this means 2.8.3 always and no upgrades
+
+After running - npm init (it will ask couple of question like, package name, description etc), a package.json file will be created with the details that we have given in a JSON format
+
+Package.json is just a configuration for the npm (npm manages the dependecies (packages) of our project, like it stores the version number etc..)
+
+1st main important package is bundler. there are various bundlers in market like webpack, veet, parcel etc.. All bundlers does the same thing (i.e bundles the app and make the app ready for production), only the algorithm that it uses behind differs
+
+Parcel is a dev dependency (i.e bundling, minification, chunking and all are done at lcoal dev environment and not in production)
+
+package-lock.json stores the exact version of installed package (i.e locks the version), whereas package.json store the approximate version of the package.
+
+package-lock.json maintains the package names, its exact version and the versions of all its depedencies which are there inside the node_modules. That's y it is huge
+
+We should not push node_modules in git (include it in .gitignore file), but package.json and package-loack.json should be pushed to github or git repository. Because you can regenerate node_modules on the server
+
+integrety prop in every package object in package-lock.json stores the hash value which keeps track of version and makes sure that the version which is in local is the exact version which is deployed to prod
+
+IGNITE THE APP
+
+Bundlers - Parcel, Webpack, Veet etc..
+
+npm i parcel
+
+npx parcel index.html - Our app will be hosted on to "http://localhost:1234" port. That is parcel created a local server for us (hosted onto a server) and given us a port (1234). That means, Parcel creates a development build from the source index.html and hosts that dev build into the "http://localhost:1234" server.
+(Note: npm is to install a package, whereas npx is to execute a package)
+
+Using CDN to get react is a costly operation as it will make a network call to the CDN server to get react. If react is inside our node_modules, it would be easy to use it in our code.
+Another disadvantage of using CDN is, lets say we used this CDN - https://unpkg.com/react@18/umd/react.development.js, in future if the react version changed to 19, to use that we have to change the URL again. So it would be easy for us to have react as a dependency and manage it in package.json
+
+npm i react
+npm i react-dom
+
+Remove CDNs
+
+import React from "react"
+import ReactDOM from "react-dom"
+
+If you run the server you will get an error that says - "Browser scripts cannot have imports or exports". This is because javascript does not recognize import. Browser considers this - <script src="./App.js"></script> as a normal javascript file.
+Now we need to tell the browser that it's not a normal javascript file, it is a module by adding type="module" to the script tag - <script type="module" src="./App.js"></script>
+
+Parcel does HMR (Hot module replacement) by using a File watching algorithm which is written in C++ (With this upon saving the file, browser will refresh automatically and new changes can be seen on the page). That is, as soon as you save, it will build the app once again.
+Everytime you save, the build time reduces as the parcel is doing caching. It stores the cache in the .parcel-cache folder which is created when we installed and executed parcel (i.e after our first build)
+
+# Parcel
+
+    - Creates Dev build
+    - Creates local server
+    - HMR = Hot module replacement
+    - File watching algorithm (written in C++)
+    - Caching - Faster builds
+    - Image Optimization
+    - Minification (replaces large names with small names etc.. for production builds)
+    - Bundling
+    - Compressing (i.e reduces the size and ships to production)
+    - Consistent Hashing (Outup dosen't change if the names dont change, so consistent hashing is helpful in that case)
+    - Code Splitting
+    - Diiferential Bundling (supports older browsers i.e different bundles for different browsers)
+    - Diagnostic (Proper error messages on console with links that redirects to the code)
+    - Error Handling
+    - HTTPs
+    - Tree Shaking (Our project can have 100 functions, so parcel does tree shaking and removes unused functions and unused code)
+    - Different dev and prod bundles/builds (because prod build takes times as it has extra minifications compared to dev build )
+
+    npx parcel index.html - dev build
+    npx parcel build index.html - prod build
+    But we will get an error if we run this because in package.json we have a property - main: "App.js". This is a conflict as npm sees App.js as entry point but in the  "npx parcel build index.html" command we are giving index.html as entry point, so it gives error. Remove that main: "App.js" property from package.json, you will not get any error
+
+    Upon running "npx parcel index.html" or "npx parcel build index.html" it creates dist folder and minifies/bundles files and puts them inside the dist folder. Whatever UI you see on the browser is coming from the files inside the dist folder, not from the actual files. Whenever we save, dist folder interacts with the .parcel-cache folder to see the recent changes and generate the new build in even lesser time and store new changes in the dist folder which will be reflected in the UI
+
+    By running "npx parcel build index.html", it will create 3 files in the dist folder (other 2 files are mapper files). These 3 files are the production ready code of our app.
+    a. 1 HTML file  (index.html) - i.e Minified, Compressed and Combined all the html files into one
+    b. 1 CSS file (index.2342dsfsd.css) - i.e Minified, Compressed and Combined all the css files into one
+    c. 1 JS file (index.fsedf2132) - i.e Minified, Compressed and Combined all the js files into one
+
+    You shouldn't push "dist" and  ".parcel-cache" folders in github as they can be regenerated on the server by running the command "npx parcel index.html",  like "node_modules". So put them in .gitignore
+
+    (LOCAL FE CODE) ---pushed to git-----> (GIT) <-----fetches from git and runs the npx parcel index.html that creates all dist and other folders--- (SERVER)
+
+    browserslist - this package comes with parcel. With the help of this package you can make your app work with different browsers and also older versions of browser. For this to work, you need to mention it in the package.json file like below
+    "browserslist": [
+        "last 2 versions",
+        // "last 2 chrome versions"
+    ]

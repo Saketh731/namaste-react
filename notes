@@ -1,4 +1,6 @@
-React alone dosen't make our app fast (its a small piece of javascript code), there are lot of other things (packages) that comes with create-react-app that bundles, minifies, compressesgit init, chaches, optimizes images, code splits etc.. and makes the app fast and production ready
+## Episode - 1 & 2
+
+React alone dosen't make our app fast (its a small piece of javascript code), there are lot of other things (packages) that comes with create-react-app that bundles, minifies, compresses, git init, caches, optimizes images, code splits etc.. and makes the app fast and production ready
 
 To configure the remote git repository (which is created on github by clicking create new repository) to our project, follow below steps
 git init - To convert our local code into a git repository
@@ -105,3 +107,70 @@ Everytime you save, the build time reduces as the parcel is doing caching. It st
         "last 2 versions",
         // "last 2 chrome versions"
     ]
+
+## Episode - 3
+
+You can add script tags in package.json as a shortcut to excecute npm packages.
+Example: If you write this script tag - "start": "parcel index.html", you can exceute or start the parcel/server by running just - "npm run start" command instead of running "npx parcel index.html".
+You can run "npm start" instead of "npm run start" as both are same because start is a reserved keyword on npm, But you can't do this with "npm run build".
+
+React - It will have core features of react and it can create React elements which is nothing but objects
+ReactDOM - It will interact with HTML DOM and will convert React elements to HTML elements and will put it in HTML DOM by replacing (not appending) the children of root element.
+
+JSX - HTML or XML like syntax
+
+JSX and React are seperate. JSX is not a part of React like many think. Creating ReactElements using pure core React is tought so developers have came up with JSX which is similar to HTML.
+
+JS Engine and React can't understand JSX. JSX will be converted to React. createElement by Parcel - babel which React can understand, and this React.createElement will be again converted to Javascript object that JS Engine can understand. So we can write JSX (HTML like syntax) within Javascript code. That means we can write it together in same file.
+
+JSX - Transpiler (Converts JSX syntax to React.createElement that React can understand)
+
+If we have to give attributes in JSX then it should be camelCase - className (instead of class),tabIndex (instead of tabindex),onClick (instead of click)
+
+If you are writing JSX, you need to write in single line like below
+const jsxHeading = <h1 id="heading" >Namaste React using JSX 🚀</h1>;
+
+If you want to write JSX in multiple lines then you should write like below because JSX needs to understand where it started and where it ended
+const jsxHeading = (
+
+  <h1 id="heading" className="head">
+    Namaste React using JSX 🚀
+  </h1>
+);
+
+React Components - 1. Class based components 2. Functional Components
+
+If you are creating a functional components then name it with a capital letter first (Ex: HeadingComponent), else you will get an error. It's react way of recognising functional components.
+
+React Functional Component is a normal javascript function that returns some piece of JSX (i.e it returns a ReactElement (as babel converts that JSX to React.createElement)).
+NOTE: Functional Component returns only one ReactElement (but it can be nested).
+
+\*\*NOTE: To render a ReactElement to browser you do - "root.render(heading)". But to render React Component onto the browser we do this - "root.render(<HeadingComponent />)"
+Similarly if you want to put an element inside a JSX you do like below
+
+ <h1 id="heading" className="head">
+    {title}
+    Namaste React using JSX 🚀
+  </h1>
+But if you want to put a component inside JSX then you do like below
+ <h1 id="heading" className="head">
+    <Title />
+    <Title></Title>
+    {Title()}
+    Namaste React using JSX 🚀
+  </h1>
+NOTE: Babel is converting all the above JSX into ReactElement which is nothing but a javascript object
+
+If you put curly braces inside JSX - {}, then you can write any piece of javascript inside those curly braces
+
+Cross Site Scripting - Lets say you have called an API which gives Malicious data (which is rare) and include that in your JSX like below
+const data = api.getData()
+
+ <h1 id="heading" className="head">
+    {data}
+    Namaste React using JSX 🚀
+  </h1>
+In this case the hacker will get a chance to run any javascript code on your browser (by doing this he can do many things like stealing cookies or localstorage data etc..)
+But JSX will handle such things. Whenever we get such malicious data and include it inside curly brackets - {}, then JSX will first sanitise the data and then only it shows in the browser. This will protect our App from Cross Site Scriptings.
+
+NOTE: React is readable not because of React, but it's because of JSX which is making it much more readable than React and this JSX is independent from React.

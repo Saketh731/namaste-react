@@ -29,13 +29,13 @@ After running - npm init (it will ask couple of question like, package name, des
 
 Package.json is just a configuration for the npm (npm manages the dependecies (packages) of our project, like it stores the version number etc..)
 
-1st main important package is bundler. there are various bundlers in market like webpack, veet, parcel etc.. All bundlers does the same thing (i.e bundles the app and make the app ready for production), only the algorithm that it uses behind differs
+1st main important package is bundler. There are various bundlers in market like webpack, veet, parcel etc.. All bundlers does the same thing (i.e bundles the app and make the app ready for production), only the algorithm that it uses behind differs
 
 Parcel is a dev dependency (i.e bundling, minification, chunking and all are done at lcoal dev environment and not in production)
 
 package-lock.json stores the exact version of installed package (i.e locks the version), whereas package.json store the approximate version of the package.
 
-package-lock.json maintains the package names, its exact version and the versions of all its depedencies which are there inside the node_modules. That's y it is huge
+package-lock.json maintains the package names, its exact version and the versions of all its depedencies which are there inside the node_modules. That's why it is huge
 
 We should not push node_modules in git (include it in .gitignore file), but package.json and package-loack.json should be pushed to github or git repository. Because you can regenerate node_modules on the server
 
@@ -119,11 +119,11 @@ ReactDOM - It will interact with HTML DOM and will convert React elements to HTM
 
 JSX - HTML or XML like syntax
 
-JSX and React are seperate. JSX is not a part of React like many think. Creating ReactElements using pure core React is tought so developers have came up with JSX which is similar to HTML.
+JSX and React are seperate. JSX is not a part of React like many think. Creating ReactElements using pure core React is tough so developers have came up with JSX which is similar to HTML.
 
-JS Engine and React can't understand JSX. JSX will be converted to React. createElement by Parcel - babel which React can understand, and this React.createElement will be again converted to Javascript object that JS Engine can understand. So we can write JSX (HTML like syntax) within Javascript code. That means we can write it together in same file.
+JS Engine and React can't understand JSX. JSX will be converted to React.createElement by Parcel - babel, which React can understand, and this React.createElement will be again converted to Javascript object that JS Engine can understand. So we can write JSX (HTML like syntax) within Javascript code. That means we can write it together in same file.
 
-JSX - Transpiler (Converts JSX syntax to React.createElement that React can understand)
+babel - Transpiler (Converts JSX syntax to React.createElement that React can understand)
 
 If we have to give attributes in JSX then it should be camelCase - className (instead of class),tabIndex (instead of tabindex),onClick (instead of click)
 
@@ -174,3 +174,40 @@ In this case the hacker will get a chance to run any javascript code on your bro
 But JSX will handle such things. Whenever we get such malicious data and include it inside curly brackets - {}, then JSX will first sanitise the data and then only it shows in the browser. This will protect our App from Cross Site Scriptings.
 
 NOTE: React is readable not because of React, but it's because of JSX which is making it much more readable than React and this JSX is independent from React.
+
+## Episode - 4
+
+Prop - Passing a prop to a component is just like passing an argument to a function. Whatever props we pass to a component, react will wrap all those props into an object and will pass that object to that component. If you want to pass data dynamically to a component, you can pass it as props
+
+Config Driver UI - Our UI is derieved by config (which we get from API response). For example - In swiggy app you may have different offers in different sate, for that you cant build different UIs for each state. So based on the configs (state property) you get from backend backend you show different offers for different state (based on location selected). Config is the data coming from the API, which keeps on changing based on different factors like user, location etc.
+
+Cloudinary - It is a CDN where we can store all our app related images
+
+Add a unique key (key={id}) to each loop item in react - Reason for this is, it helps react optimize the render cycle. Lets say we have 1000 loop items (component) and a new 2 cards came in, 1 at first place and other somewhere in between. Now react will not know where exactly to place that cards. So it will re-render the whole 1002 items again which is time consuming (especially when it is an infinite scroll). So the best practice is to add a unique key (key={id}) for each loop item so that react will be able to identify where exactly to place those 2 new items instead of re-rendering the whole list of items again, which will be a huge code optimization. If we don't give a unique key for each item in a loop, then react will give a warning in the console.
+Note: Here item means a component/element
+
+React does not recommend to use indexes as unique key - Because this may cause a negative impact if the order of the list of items changes. If you don't have a unique id, as backend to send it else in the worst case you can use index which is still better than not passing any key.
+
+Optional Chaining - a?.b?.c => If the object or the function is not available, then it will return undefined, instead of throwing an error.
+
+While using React, developers don't need to bother on how to update the actual DOM like how we do with jQuery by parsing the DOM to find the element that needs to be updated. In react you just need to focus on how the current state of the UI is at different intervels and need to update the state that's it. Rest is taken care by React and ReactDOM to create a virtual DOM and compare it with actual DOM and update only those node on the actual DOM which are change, instead of re-rendering the whole DOM tree (which is actually done on page refresh).
+
+Virtual DOM - It is like a copy of an actual DOM, which is created by ReactDOM based on the JSX we returned and renders this virtual DOM to actual DOM with the help of root.render() method.
+
+Reconcilation - Virtual DOM is not rendered directly to browser application. React uses reconcilation, which is a diffing algorithm to compare both vitual DOM and real DOM, and find out what exactly changed and only modify that instead of rerendering entire DOM.
+There are 3 scnarios:
+
+1. If component types are different like - <a><p>Text</p></a> and <b><p>Text</p></b> then that entire tree node is replaced (rerendered) with new node.
+2. If component types are same and attributes are different - <div className="abc"></div> <div className="xyz"></div> the entire node no need to be rerendered. Only that specific attribute will be modified/replaced.
+3. If there are list of elements on same level and new element gets added to that list at end, then reconcilation algorithm will compare each list item from start and adds last item at end. Now if an element get added at beginning, then when ReactDOM starts diffing from first element, it finds first elements from both trees different and will rerender all the list which is wrong. So we need to provide unique key to each item in a list to avoid this problem
+
+## BEST PRACTICES
+
+Config driven UI
+Passing unique key for each item (component) inside a loop
+
+What is Virtual DOM? - https://reactjs.org/docs/faq-internals.html
+What is Reconciliation in React? - https://reactjs.org/docs/reconciliation.html
+What is React Fiber? - https://github.com/acdlite/react-fiber-architecture
+Why we need keys in React? When do we need keys in React?
+Can we use index as keys in React? - https://robinpokorny.com/blog/index-as-a-key-is-an-anti-pattern/

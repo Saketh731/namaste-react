@@ -194,12 +194,12 @@ While using React, developers don't need to bother on how to update the actual D
 
 Virtual DOM - It is like a copy of an actual DOM, which is created by ReactDOM based on the JSX we returned and renders this virtual DOM to actual DOM with the help of root.render() method.
 
-Reconcilation - Virtual DOM is not rendered directly to browser application. React uses reconcilation, which is a diffing algorithm to compare both vitual DOM and real DOM, and find out what exactly changed and only modify that instead of rerendering entire DOM.
+Reconciliation - Virtual DOM is not rendered directly to browser application. React uses reconciliation, which is a diffing algorithm to compare both vitual DOM and real DOM, and find out what exactly changed and only modify that instead of rerendering entire DOM.
 There are 3 scnarios:
 
 1. If component types are different like - <a><p>Text</p></a> and <b><p>Text</p></b> then that entire tree node is replaced (rerendered) with new node.
 2. If component types are same and attributes are different - <div className="abc"></div> <div className="xyz"></div> the entire node no need to be rerendered. Only that specific attribute will be modified/replaced.
-3. If there are list of elements on same level and new element gets added to that list at end, then reconcilation algorithm will compare each list item from start and adds last item at end. Now if an element get added at beginning, then when ReactDOM starts diffing from first element, it finds first elements from both trees different and will rerender all the list which is wrong. So we need to provide unique key to each item in a list to avoid this problem
+3. If there are list of elements on same level and new element gets added to that list at end, then reconciliation algorithm will compare each list item from start and adds last item at end. Now if an element get added at beginning, then when ReactDOM starts diffing from first element, it finds first elements from both trees different and will rerender all the list which is wrong. So we need to provide unique key to each item in a list to avoid this problem
 
 ## BEST PRACTICES
 
@@ -211,3 +211,23 @@ What is Reconciliation in React? - https://reactjs.org/docs/reconciliation.html
 What is React Fiber? - https://github.com/acdlite/react-fiber-architecture
 Why we need keys in React? When do we need keys in React?
 Can we use index as keys in React? - https://robinpokorny.com/blog/index-as-a-key-is-an-anti-pattern/
+
+## Episode - 5
+
+Default export - export default Component => import Component from "../src/Component" (Used when there is a single component in a file)
+Named export - export const Component => import { Component } from "../src/Component" (Used when there are multiple components in a file)
+You can use Default export and Named export together. But only thing is you cannot use default export more than once in a file.
+
+When we change the data, our UI should automatically change based on that. Like lets say we have an restaurantArray (let restaurantArray = [{name:"R1"}]), and if we try to manypulate this array on a click event in react, our UI Restaurant Cards will not get updated, but the data will get changed which you can see it on console log. This is where React will help us by providing useState hook. (That is intead of using normal javascript variable you need to use react state variable, which defines the state of the component or app).
+React/Angular/Vue all these frameworks primary goal is to keep the data layer in sync with the UI layer (Data Layer | UI Layer), that is by doing DOM manipulations. Fastness of these frameworks will depend on how efficiently they are manipulating/changing the DOM on the data change. That is why React is much faster as it using Virtual DOM, Diffing alogorithm, Reconciliation etc.. for faster DOM manipulations
+
+## React Hooks
+
+It is just a normal javascript function which comes with special abilities (we can say them as utility functions) that react provides us. React will do named export of these hooks so that we can import them like this - import {useState} from 'react'. But it will default export React -
+import React, {useState} from 'react'
+
+useState - Super powerful variable (state variable). Whenever a state variable updates, React re-renders the component
+
+(Note: Why React is fast? - Because React is doing efficient DOM manipulation. Not because it bundles, minifies etc.. which are done by other packages like webpack, parcel etc and not by React. React is fast because it does the DOM manipulations much faster compared to other libraries in much lesser and efficient code behind the scenes. This is the core logic of React. That is why React is the best programming language)
+
+Check Reconciliation.jpg file under static folder

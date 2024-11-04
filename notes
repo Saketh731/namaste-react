@@ -231,3 +231,41 @@ useState - Super powerful variable (state variable). Whenever a state variable u
 (Note: Why React is fast? - Because React is doing efficient DOM manipulation. Not because it bundles, minifies etc.. which are done by other packages like webpack, parcel etc and not by React. React is fast because it does the DOM manipulations much faster compared to other libraries in much lesser and efficient code behind the scenes. This is the core logic of React. That is why React is the best programming language)
 
 Check Reconciliation.jpg file under static folder
+
+## Episode - 6
+
+There are 2 ways to fetch data
+
+1. App Loads -> API (500ms) -> Render
+2. App Loads -> Render (Basic skeleton UI) -> API (to fetch data) -> ReRender => [This approach we follow in react].
+
+# useEffect
+
+useEffect is also just a javascript function which comes with some super powers. We pass 2 arguments (callback function and dependency array) to useEffect
+
+useEffect(()=>{
+console.log("useEffect called");
+},[])
+
+This above useEffect callback function will be called after the component renders (That is after component mounted => componentDidMount). So we write code to fetch data inside this callback function so that it executes and fetches the data after the component renders.
+
+Now lets say you did console log at 3 places :
+
+1. Inside Body component and outside return block
+2. Inside return block
+3. Inside useEffect's call back function
+
+Now all console logs will be printed in the above order only becauese when Body component is called, it executes line by line like a Javascript function and after executing the first console log outside return block, it then executes return block console log and then executes call back funtion's console log
+
+When you try to fetch swiggy API from your local origin it throws error saying - "Access to fetch at 'https://www.swiggy.com/dapi/..' from origin 'http://localhost:1234' has been blocked by CORS policy. No 'Access-Control-Allow-Origin' header present on the requested header". This error is throw by the browser, that is browser is blocking to access data from different origin. To overcome this you need to add CORD chrome extension.
+
+\*\*\*Note: When you update a state variable in React, the current component containing the state variable will be called again, that means, that function will get executed again line by line (You can see this by doing console log inside that component. Whenever state updates, the console log gets printed again) and it will create a new Virtual DOM. Inshort whenever a react state variable updates, react triggers the reconciliation algorithm, which executes the current component(function) again and generates a new Virtual DOM and compares it with old Virtual DOM and then updates the real actual DOM with only the differences found on comparision from old Virtual DOM.
+Also, you may have a doubt like how a const state variable can get updated as its a constant. But here, whenever state updates the component gets re-rendered with a new state value, that is a new instance, which is not the same previous const variable. When the enire funtion gets executed, it builts a new Virtual DOM tree and then compares it with the previous tree and finds the difference betweeen two and then updates the real DOM with only the diff found.
+
+\*\*\*Note: When you are using input text box and tried to make it a controlled component by using local variable instead of local state then the UI wont get updated as on every onChange you will be updating local variable (value) which can be printed in console but it wont be reflected in actual DOM
+(let value = ""; <input value="" onChange={(e)=>{value = value+e.target.value}} value={value}/>) as the actual DOM is not getting re-rendered as we are not using and updating the local state variable
+
+CORS - Cross Origin Resource Sharing is a browser security mechanism. When we request or post data from a different origin, browser throws this error. To overcome this server needs to set our request origin in Access-Control_allow-Origin headers. If its public it will be \*. When we request/post data from different origin. first preflight/options call will be made, whick server validates and sends back additional hhtp headers to browser, by which browser will know its safe call and is allowed, then only actual call get/post/.. is made.
+
+JS expression - Something which resolves to a value like, const a = 5; or const b = getValue(); Here both 5 and getValue() are expressions
+JS statement - Statements are something which dosent resolve to a value and perform some actions like, if statement, while, for, const a = 5. All these are statements. You cannot keep a statement in place of expression like, console.log(const a); This will throw error.

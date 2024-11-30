@@ -269,3 +269,95 @@ CORS - Cross Origin Resource Sharing is a browser security mechanism. When we re
 
 JS expression - Something which resolves to a value like, const a = 5; or const b = getValue(); Here both 5 and getValue() are expressions
 JS statement - Statements are something which dosent resolve to a value and perform some actions like, if statement, while, for, const a = 5. All these are statements. You cannot keep a statement in place of expression like, console.log(const a); This will throw error.
+
+## Episode - 7
+
+useEffect - useEffect callback function is called after every render (also re-render) of that component. But the Dependency Array changes the behaviour or decides when that callback function should be called (that means on which state changes).
+
+\*\*\*Note: If there is no dependency array, then the useEffect (callback function) will get called on every render (also re-render)
+If the dependency array is empty ([]), then the useEffect (callback function) will get called on only the initial render (just once).
+If we give something inside the dependency array [state] then useEffect (callback function) will get called only when that dependency(state) changes.
+
+## react-router-dom
+
+createBrowserRouter - This helps to create the routing configuration (by passing list of paths as an arguments)
+RouterProvider - This helps to provide that routing configuration in our application. It is a Component in which we pass router configuration and this returns the specified component for a particular path
+useRouteError - This is a hook given to us by react-router-dom. Using this hook we can get more information about the error.
+
+---
+
+Example:
+const appRouter = createBrowserRouter([
+{
+path: "/",
+element: <AppLayout />,
+errorElement: <Error />,
+},
+{
+path: "/about",
+element: <About />,
+},
+{
+path: "/contact",
+element: <Contact />,
+},
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(<RouterProvider router={appRouter} />);
+
+---
+
+Outlet - This is a component given to us by react-router-dom. By using this we can show children of a particular route.
+
+---
+
+Example:
+const AppLayout = () => {
+return (
+
+<div className="app">
+<Header />
+<Outlet />
+</div>
+);
+};
+
+const appRouter = createBrowserRouter([
+{
+path: "/",
+element: <AppLayout />,
+children: [
+{
+path: "/",
+element: <Body />,
+},
+{
+path: "/about",
+element: <About />,
+},
+{
+path: "/contact",
+element: <Contact />,
+},
+],
+errorElement: <Error />,
+},
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(<RouterProvider router={appRouter} />);
+
+---
+
+Link - This is a component given to us by react-router-dom. This helps to navigate to other routes without reloading the page unlike anchor tags.
+Example : <Link to="/about">About Us</Link>
+\*\*\*This is why React applications are single page applications. Even while adding routes it wont refresh the page or go to new page. It just changes or switches to a different component by making our application a single page application.
+
+## There are 2 types of Routing
+
+1. Server Side Routing - Whenever you navigate to a different route, the page refreshes and make the network calls to fetch the HTML pages from the server. Server Side Routing has multiple html pages like Home.html, About.html etc..
+2. Client Side Routing - Whenever you navigate to a different route, the page will not refresh and no network call is made to fetch HTML pages. All pages/components are there is the client side itself.
+   Single Page Applications uses Client Side Routing. It just manipulates or interchanges between the components and will not make any API calls to fetch new HTML pages. Client Side Routing will only have a single html page.

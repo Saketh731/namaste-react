@@ -6,8 +6,8 @@ export default RestaurantCard = ({ resData }) => {
     cuisines,
     avgRatingString,
     costForTwo,
-    deliveryTime,
     cloudinaryImageId,
+    sla,
   } = resData?.info;
   return (
     <div className="res-card" style={{ backgroundColor: "#f0f0f0" }}>
@@ -16,7 +16,7 @@ export default RestaurantCard = ({ resData }) => {
       <h4>{cuisines?.join(", ")}</h4>
       <h4>{avgRatingString} stars</h4>
       <h4>{costForTwo}</h4>
-      <h4>{deliveryTime} mins</h4>
+      <h4>{sla?.slaString}</h4>
     </div>
   );
 };

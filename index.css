@@ -27,6 +27,7 @@
   margin: 5px;
   padding: 5px;
   width: 200px;
+  cursor: pointer;
 }
 
 .res-container {

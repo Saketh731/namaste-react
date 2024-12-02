@@ -361,3 +361,188 @@ Example : <Link to="/about">About Us</Link>
 1. Server Side Routing - Whenever you navigate to a different route, the page refreshes and make the network calls to fetch the HTML pages from the server. Server Side Routing has multiple html pages like Home.html, About.html etc..
 2. Client Side Routing - Whenever you navigate to a different route, the page will not refresh and no network call is made to fetch HTML pages. All pages/components are there is the client side itself.
    Single Page Applications uses Client Side Routing. It just manipulates or interchanges between the components and will not make any API calls to fetch new HTML pages. Client Side Routing will only have a single html page.
+
+## Episode - 8
+
+Creating a class based component:
+
+---
+
+import React from "react";
+
+import React from "react";
+
+class UserClass extends React.Component {
+constructor(props) {
+super(props);
+this.state = {
+count: 0,
+count2: 2,
+};
+console.log("Child Constructor");
+}
+render() {
+console.log("Child Render");
+const { name, location } = this.props;
+const { count, count2 } = this.state;
+return (
+
+<div className="user-card">
+<h1>Count: {count}</h1>
+<button
+onClick={() => {
+this.setState({
+count: this.state.count + 1,
+count2: this.state.count2 + 1,
+});
+}} >
+Count Increase
+</button>
+<h1>Count2: {count2}</h1>
+<h2>Name: {name}</h2>
+<h3>Location: {location}</h3>
+<h4>Contact: @sakethkota73</h4>
+</div>
+);
+}
+}
+
+export default UserClass;
+
+---
+
+super() functions calls the parent classs constructor and super(props) passes props to parent constructor by invoking this. By doing this we will be able to use all the variables and methods in parent instance, in our local instance only (this).
+Even if we use multiple useStates in functional components, behind the scenes react will put all those states in a single big object like we are doing now in class based components
+
+How to update state variables?
+Never update state variables directly. React gives you a method called setState to update state variables in class components.
+this.setState({
+count: this.state.count + 1,
+});
+This only updates count key in the entire state object and does not change the other states.
+
+In any component first the constructor will be called and the after the render method will be called. If it has a parent then first the parent constructor and rendere method will be called and then after comes the child contructor and render method. Once the component is mounted, the componentDidMount() (same as useEffect with empty dependency array in functional components) method will be called.
+\*\*\*But here the catch is, parent componentDidMount will be called after the child componentDidMount because the parent component is fully rendered only after rendering its child component. That means the parent componentDidMount will be called only after the component(including its child component) has been completely mounted onto the webpage.
+
+\*\*\*Note: There are two phases in ReactLifecycle.
+
+1. Render Phase - constuctor() is called, Next render() in called
+2. Commit Phase - React updates the DOM and refs, next componentDidMount() is called
+
+**In Mounting Phase** - First there is a render phase and then comes the commit phase. So inside a parent component if we have 2 child components then:
+
+1. Parent constructor is called
+2. Parent render is called
+3. Child1 constructor is called
+4. Child1 render is called
+5. Child2 constructor is called
+6. Child2 render is called
+7. Child1 componentDidMount is called
+8. Child2 componentDidMount is called
+9. Parent componentDidMount is called
+
+Here we expect Child1 componentDidMount to be called after Child1 render is called. But as there are 2 phases (render phase and commit phase). React first renders (means executes those components and runs reconciliation algorithm) parent component and than all its child components and after finishing renders, it then starts the commit phase where it updates the actual DOM from child to parent and then calls the componentDidMount methods of those two child methods after they are mounted onto the browser and then calls componentDidMount method of the Parent. React does this wat to optimise the number of DOM updates and improve the performance of App. Instead of updating DOM 3 times, it just updated it once after rendering (executing) all components to improve the performance. So here React is batching the render and commit phase of all the child components. React is doing this because DOM manipulation is the most expensive operation and React is trying to optimise by doing this batching mechanism.
+Note: Batcing the render phase means - React builds virtual DOM trees (js objects) of all child components and then attaches those trees to the parent virtual DOM tree (js object).
+Batcing the commit phase means - React now commits this entire DOM tree (including parent and children) at once onto the browser (that is, by updating the real DOM).
+This is why React is fast - First is, instead of changing the entire DOM tree, it just compares it with virtual DOM and sees what has been changed exactly and only does that part of changes to DOM. Second is, instead of manu=ipulating DOM multiple times, React just batches all the commits and does a single commit (real DOM manipulation) to the DOM.
+
+1. constructor()
+2. render()
+3. componentDidMount()
+
+**In Updating Phase** - In componentDidMount, if we make an API call and then update the state with this.setState() after receiving the data from API, then the UPDATE Lifecycle will get triggered and first the render methid will be called which starts the recociliation algorithm generating the virtual DOM tree and after that, React updates the actual DOM comparing it with virtual DOM and then after that componentDidUpdate() will be called. Note that constructor method will not be called in the update cycle.
+
+1. render()
+2. componentDidUpdate()
+
+**In Unmounting Phase** - When the component gets removed from the actual DOM then the componentWillUnmount() method will be called. You use componentWillUnmount() method to clear all the mess (like events, setIntervel, setTimeOut etc..) that you have created which needs to be removed from memory to not impact the App's performance.
+
+1. componentWillUnmount()
+
+**Functional component equivalents**
+
+componentDidMount()
+
+useEffect(()=>{
+
+},[])
+
+---
+
+componentDidUpdate()
+
+useEffect(()=>{
+
+})
+
+---
+
+componentWillUnmount()
+
+useEffect(()=>{
+return ()=>{
+//Some piece of code
+}
+},[])
+
+---
+
+componentDidUpdate(prevProps, prevState){
+if(this.state.count !== prevState.count || this.state.count2 !== prevState.count2){
+//For same action
+}
+}
+
+useEffect(()=>{
+//for same action
+},[count,count1])
+
+---
+
+componentDidUpdate(prevProps, prevState){
+if(this.state.count !== prevState.count){
+//for different actions
+}
+if(this.state.count2 !== prevState.count2){
+//for different actions
+}
+}
+
+useEffect(()=>{
+//for different actions
+},[count])
+
+useEffect(()=>{
+//for different actions
+},[count2])
+
+---
+
+<!--
+----MOUNTING-----
+Constructor (set state with dummy data)
+Render (render with dummy data)
+  <Updates the Real DOM with dummy data>
+ComponentDidMount
+  Make API call
+  this.setState
+
+
+----UPDATING-----
+Render (render with API response data)
+  <Update the real DOM with API data>
+ComponentDidUpdate
+
+----UNMOUNTING-----
+componentWillUnmount
+ -->
+
+**All React Lifecycle Methods**
+
+1. constructor()
+2. render() - Entire Functional component itself
+3. componentDidMount() - useEffect(()=>{},[])
+4. componentDidUpdate() - useEffect(()=>{})
+5. componentWillUnmount() - useEffect(()=>{return ()=>{}},[])
+
+Note: We cannot use async with useEffect callback function

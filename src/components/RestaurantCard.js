@@ -1,3 +1,4 @@
+import { useState } from "react";
 import IMAGE_URL from "../utils/constants";
 
 export default RestaurantCard = ({ resData }) => {
@@ -9,6 +10,7 @@ export default RestaurantCard = ({ resData }) => {
     cloudinaryImageId,
     sla,
   } = resData?.info;
+
   return (
     <div className="res-card" style={{ backgroundColor: "#f0f0f0" }}>
       <img className="res-logo" src={IMAGE_URL + cloudinaryImageId} />

@@ -546,3 +546,42 @@ componentWillUnmount
 5. componentWillUnmount() - useEffect(()=>{return ()=>{}},[])
 
 Note: We cannot use async with useEffect callback function
+
+## Episode - 9
+
+Single Responsibility Principle - Each component should have a single responsibility. That is, to create its compoent and return it (JSX). Remaining activities like fetching data, managing state etc.. should be moved out of the component.
+Always use custom hooks to write your fetchimg loging using useState and any other activities with useState and useEffect. This mantains modularity of a component and makes your code more readable, maintainable and testable.
+
+**Chunking / Code Splitting / Lazy Loading / Dynamic Import / Dynamic bundling / On Demand Loading**
+All these names serve the same meaning. When we are working on a huge project which has lot of components then when parcel bundles our project into one file, that file becomes so huge and impacts the performance as it takes time to load that huge file. So to overcome this we need to split out app into various chunks. That means in a Swiggy app, Food Delivery can be one bundle, instamart can be another bundle etc.. We can load instamart bundle only when we navigate to instamart page. That is why this technique is also called - On Demand Loading.
+
+We do this using a function called - lazy, which react gives us
+import {lazy} from 'react'l
+const Grocery = lazy(()=>import("./components/Grocery"));
+//Here this import is different from the first import. This import is a function which is used for dynamic imports. Hence, this technique is also called - Dynamic Import. This will make a new API call (you can check in under network tab under js section) to fetch the Grocery bundle.
+Q) But how server is being able to send a new bundle on demand? Where and how is the new bundle stored in server?
+A) If you have noticed, you can see that an additional Grocery js bundle is created inside your dist folder. Basically at server this dist folder will be created (which we kept in dist ignore), all different bundle files will be created at build step itself. Based on the need or the import(dynamic), it will send the required bundle to the UI. So on initial page load UI loads the initial bundle. When it goes to Grocery page, UI makes API call to the server (because of the dynamic import) to fetch the Grocery js bundle. Once bundle is fetched, it won't fetch it again and again as js code remains same.
+
+Now as we are using lazy and dynamic import to fetch Grocery budle, when we navigate to grocery page, an api call is made to fetch Grocery js bundle. It takes some milli seconds or seconds to fetch it. But before that React will try to show the Grocery component (as it is fast) in the UI, whose code is actually not there yet. So react will suspend the component from loading in the UI by throwing an error (You can see this error in console).
+To overcome this we use a component provided by react - Suspense. This will wait until the new bundle (here Grocery) is loaded and shows a fallback UI / loader until then by not breaking the UI. Once we get the new bundle (here Grocery), we will be showing the actual component. Wrap this Suspense component around the Grocery component.
+<Suspense fallback={<h1>Fallback Component</h1>}><Grocery /></Suspense>
+
+This Code splitting is very powerful and we achieved this with just three lines of code
+
+1. import {lazy, Suspense} from 'react';
+2. const Grocery = lazy(()=>import("/components/Grocery"))
+3. <Suspense fallback={<h1>Fallback Component</h1>}><Grocery /></Suspense>
+
+**Code Splitting Advantages:**
+Faster Initial Load Time,
+Improved Performance,
+Optimized Resource Usage (Features that are rarely used may never be loaded unless needed),
+Enhanced Caching
+Simpler Maintenance (You can be more confident that you won't introduce unexpected issues in unrelated components),
+Better Mobile Performance (Devices with limited bandwidth and processing power, code splitting can significantly enhance the user experience)
+
+**Code Splitting Disadvantages:**
+Complex Configuration (You may need to make adjustments to your build tools and bundler settings),
+Initial Loading Delay (For bundled components),
+Tool and Framework Support (Not all frameworks and libraries have built-in support for code splitting. You may need to rely on specific tools and configurations),
+Testing Complexity

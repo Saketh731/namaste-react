@@ -585,3 +585,10 @@ Complex Configuration (You may need to make adjustments to your build tools and 
 Initial Loading Delay (For bundled components),
 Tool and Framework Support (Not all frameworks and libraries have built-in support for code splitting. You may need to rely on specific tools and configurations),
 Testing Complexity
+
+## Episode - 10
+
+## Tailwind
+
+Styling using Tailwind. Behind the scenes Tailwind uses postcss. Postcss is a tool for transforming css with Javascript (You dont need to know about postcss, it's enough if you know what it is). So hence, we need to install both taiwindcss and postcss.
+You need to create tailwind.config.js file and .postcssrc file for post css config. .postcssrc file is used and read by parcel to understand what is written in Tailwind.

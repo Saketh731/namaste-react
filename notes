@@ -592,3 +592,18 @@ Testing Complexity
 
 Styling using Tailwind. Behind the scenes Tailwind uses postcss. Postcss is a tool for transforming css with Javascript (You dont need to know about postcss, it's enough if you know what it is). So hence, we need to install both taiwindcss and postcss.
 You need to create tailwind.config.js file and .postcssrc file for post css config. .postcssrc file is used and read by parcel to understand what is written in Tailwind.
+
+**Disadvantages of Tailwind**
+
+1. Increases length of code if there are more number of styles. It makes code look ugly.
+2. If you want a particular style which is unique which you may not get it with Tailwind then it can be tough
+3. Reusability of classes is not thre like in styled components. You need to repeat same styling at multiple elements even though styling is same.
+4. If you want to override styles of an internal package element than you can't target that element using Tailwind, like we do it in css using specificity.
+5. You cannot increase specifity with Tailwind.
+6. You cannot target alll child elements and write one style like this - 'div > p{}' using Tailwind. You need to repeat styles for every 'p' element
+
+**Advantages**
+
+1. Faster development. Makes life easy
+2. Light weight. That means, when parcel/webpack bundles out App it only includes those Tailwind styles whicha re being used in components and does not bring all those 1000's of unused styles from Tailwind package. This is a very very major advantage because it reduces the bundle size. In regular App development using normal CSS, we knowingly or unknowingly repeat same css stylings at multiple place, it can be as simple as 'margin: 10px'. This will increase our bundle size and Tailwind helps to overcome this issue.
+3. You can style complex features like on hover styles, dark mode etc.. very easily with some simple classes using Tailwind.

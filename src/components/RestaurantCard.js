@@ -1,7 +1,7 @@
-import { useState } from "react";
 import IMAGE_URL from "../utils/constants";
 
 export default RestaurantCard = ({ resData }) => {
+  console.log("RestaurantCard rendered");
   const {
     name,
     cuisines,
@@ -21,4 +21,17 @@ export default RestaurantCard = ({ resData }) => {
       <h4>{sla?.slaString}</h4>
     </div>
   );
+};
+
+export const withPromotedLabel = (RestaurantCard) => {
+  return (props) => {
+    return (
+      <div>
+        <label className="absolute bg-black text-white p-2 m-2 rounded-lg">
+          Promoted
+        </label>
+        <RestaurantCard {...props} />
+      </div>
+    );
+  };
 };

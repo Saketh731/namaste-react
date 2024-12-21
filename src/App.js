@@ -1,6 +1,9 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { Provider } from "react-redux";
+import { ApiProvider } from "@reduxjs/toolkit/query/react";
+import { productsAPI } from "./utils/appSlice";
 import Header from "./components/Header";
 import Body from "./components/Body";
 // import About from "./components/About";
@@ -10,7 +13,10 @@ import Error from "./components/Error";
 import RestaurantMenu from "./components/RestaurantMenu";
 import UserContext from "./utils/UserContext";
 // import Grocery from "./components/Grocery";
+import appStore from "./utils/appStore";
+import Cart from "./components/Cart";
 const Grocery = lazy(() => import("./components/Grocery"));
+
 // not using keys (not acceptable) <<<<< using index as key <<<<<<<<<< using unique id as key (best practice)
 
 const AppLayout = () => {
@@ -30,16 +36,20 @@ const AppLayout = () => {
     };
   }, []);
   return (
-    <UserContext.Provider
-      value={{ loggedInUser: userName, setUserName: setUserName }}
-    >
-      <div className="app">
-        {/* <UserContext.Provider value={{ loggedInUser: "Elon Musk" }}> */}
-        <Header />
-        {/* </UserContext.Provider> */}
-        <Outlet />
-      </div>
-    </UserContext.Provider>
+    <Provider store={appStore}>
+      {/* <ApiProvider api={productsAPI}> */}
+      <UserContext.Provider
+        value={{ loggedInUser: userName, setUserName: setUserName }}
+      >
+        <div className="app">
+          {/* <UserContext.Provider value={{ loggedInUser: "Elon Musk" }}> */}
+          <Header />
+          {/* </UserContext.Provider> */}
+          <Outlet />
+        </div>
+      </UserContext.Provider>
+      {/* </ApiProvider> */}
+    </Provider>
   );
 };
 
@@ -71,6 +81,10 @@ const appRouter = createBrowserRouter([
             <Grocery />
           </Suspense>
         ),
+      },
+      {
+        path: "/cart",
+        element: <Cart />,
       },
       {
         path: "/restaurants/:resId",

@@ -693,3 +693,213 @@ return (
 ---
 
 Disadvantage of Context API: If you Provide the Context at the root level, then for every state update in context, all the child components will re-render, irrespective of whether they are using the state or not.
+
+## Episode - 12
+
+**Redux**
+It is a state management library.
+
+Drawbacks:
+
+1. Lot of boilerplate code
+2. Configuring Redux store is very complicated
+3. Need to add additional packages to get complete usage from Redux
+
+Solution is Redux Toolkit
+
+**Redux Toolkit**
+
+It has one store (huge objects) where all the components states can be stored and accessed from. That one store has multiple slices (seperate blocks) where each slice maintains its own relavent states like User Slice, Theme Slice, Cart Slice, Admin Slice etc..
+
+How Redux state is updated: **Write Data**
+Click event/any other events => [Dispatch] an [Action] => A function is called fun() [Reducer] => Which updates the [Slice] of our [ReduxStore]
+
+Every [action] is tied to its respective [reducer] function
+
+You have to go through this path to update the Redux store. You cannot update directly.
+
+How to read data from Reduc store: **Read Data**
+=> [Selector] (Subscribing to the store so that the UI updates(if we are using that state) whenever the Redux state updates) => Gives you the data from Redux store and you can show it in the UI/ or just use it for your internal code
+
+Code steps:
+
+- Install @reduxjs/toolkit and react-redux
+- Build our store
+- Provide our store to the app
+- Build our Slice
+- dispatch (action)
+- Read the data using [Selector]
+
+Build our store
+................
+import { configureStore } from "@reduxjs/toolkit";
+
+const appStore = configureStore({});
+
+export default appStore;
+
+Provide the store to the app
+.............................
+import { Provider } from "react-redux";
+
+<Provider store={appStore}><App></Provider>
+
+Build our Slice
+...............
+
+import { createSlice } from "@reduxjs/toolkit";
+
+const cartSlice = createSlice({
+name: "cart",
+initialState: {
+items: [],
+},
+reducers: {
+addItem: (state, action) => {
+**//Vanilla (older) redux - DO NOT MUTATE STATE and returning was mandatory**
+// const newState = { ...state };
+// newState.items.push(action.payload);
+// return newState;
+
+**//Redux Toolkit - We have to mutate the state. But behind the scenes, Redux will make it immutable for us. This is done using library called Immer, which will take the current state and the mutated state and finds the difference between the two, so that Redux can use that and create a new object from it and return it by making it immutable behind the scenes for us.**
+//Mutating the state
+state.items.push(action.payload);
+
+},
+removeItem: (state) => {
+state.items.pop();
+},
+clearCart: (state) => {
+state.items.length = 0;
+
+**To see the current state use 'current(state)', which (current) comes from @reduxjs/toolkit. You can't directly do console.log(state); because redux hides the state behind a proxy**
+//import { createSlice, current } from "@reduxjs/toolkit";
+console.log(current(state));
+
+**//This dosen't work, because IMMER works in a certain way. This is just changing the reference of the state and not changing the current state, so IMMER won't be able to find the differece as there is no state change and Redux won't be able to get that change. In deeper sense, state will become a local variable with lets say ["pizza"] coming from Redux. Now if we assign it to {} the we are not actually changing the ["pizza"] array but changing the reference of the local variable to {}. So technically there is no change in the state and Immer will understand that nothing changed/**
+//state={items: ["Saketh"]}
+//state={}
+
+**//You can also do this. Redux Toolkit says, either Mutate the existing state or return a new state**
+//return {items: []};
+},
+},
+});
+
+export const { addItem, removeItem, clearCart } = cartSlice.actions;
+
+export default cartSlice.reducer;
+
+App.js
+
+import { configureStore } from "@reduxjs/toolkit";
+import cartReducer from "./cartSlice";
+
+const appStore = configureStore({
+reducer: {
+cart: cartReducer,
+},
+});
+
+export default appStore;
+
+//Here, addItem,removeItem,clearCart are the actions and they have their corresponding reducers. So each action have its reducer and there all multiple reducers. Hence,the key name is reducers. These reducers will modify the state.
+
+//Note that here we return 2 things
+
+1. Reducer
+2. Actions
+
+Because createSlice({}) will return an object like this - {actions:{}, reducer:()=>{}}
+
+In App.js inside configureStore object we need to have one global reducer consisting of multiple small reducers for each slice
+
+Read the data using [Selector] / Subscribing to the store
+.........................................................
+//Subscribing to the store (slice of a store) using selector. Basically selector gives access to whole store but you just need to access a slice of it. That means when ever the state changes the cart also get updated as it is subscibed to the store using a selector
+
+import { useSelector } from "react-redux";
+
+const cartItems = useSelector((state) => state.cart.items);
+
+**// Never write it like this as this impacts performance because this is like subscribing to the entire store. Whenever the store updates our component will get effected**
+// const store = useSelector((state) => state);
+// const cartItems = store.cart.items
+
+ <li className="px-4 font-bold">Cart {cartItems?.length}</li>
+
+dispatch (action)
+.................
+import { useDispatch } from "react-redux";
+import { addItem } from "../utils/cartSlice";
+
+const handleAddItem = () => {
+//Dispatch an action
+console.log(addItem("pizza")); // {type: 'cart/addItem', payload: 'pizza'}
+dispatch(addItem("pizza"));
+};
+<button onClick={handleAddItem}> Add + </button>
+
+Note: An action is a plain JavaScript object that describes what should change in the application's state.
+
+**Use useContext When** We have smaller-scale state management needs within a
+component or a local subtree. We want a lightweight solution without introducing
+additional complexity. Our state doesn't need to be shared extensively across
+different parts of the application.
+
+**Use Redux When** We have a complex application with a large state that needs to be
+shared across many components. We want a predictable state management
+pattern with a unidirectional data flow. We need middleware for advanced features
+like asynchronous actions.
+
+Choose useContext for simpler and local state management within components or small
+sections of our application . Choose Redux for more complex applications where we need a
+global state that can be easily shared across different components
+
+**Middleware:** The dispatch function is also a crucial point in the Redux middleware
+chain. Middleware can intercept actions before they reach the reducer or modify
+actions on the way out. Middleware functions receive the dispatch function,
+allowing them to either pass the action along or stop it.
+
+**RTK QUERY**
+
+appSlice.js
+...........
+
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+
+export const productsAPI = createApi({
+reducerPath: "productsAPI",
+baseQuery: fetchBaseQuery({ baseUrl: "https://dummyjson.com/" }),
+endpoints: (builder) => ({
+getAllProducts: builder.query({
+query: () => "products",
+}),
+getProduct: builder.query({
+query: (product) => `product/search?q=${product}`,
+}),
+}),
+});
+
+export const { useGetAllProductsQuery, useGetProduct } = productsAPI;
+
+Data.js
+.......
+
+import { useGetAllProductsQuery } from "../utils/appSlice";
+
+export default Data = () => {
+const { data } = useGetAllProductsQuery();
+console.log("Data Query", data);
+return <div>Data:</div>;
+};
+
+App.js
+......
+return (
+<Provider store={appStore}>
+<ApiProvider api={productsAPI}>
+<App/>
+</ApiProvider>
+</Provider>
+);

@@ -5,6 +5,7 @@ import ShimmerCards from "./ShimmerCards";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import { withPromotedLabel } from "./RestaurantCard";
 import UserContext from "../utils/UserContext";
+import Data from "./Data";
 
 const Body = () => {
   console.log("Body rendered");
@@ -96,6 +97,7 @@ const Body = () => {
           />
         </div>
       </div>
+      {/* <Data /> */}
       <div className="flex flex-wrap">
         {filteredListOfRestaurants.map((resObject) => (
           <Link

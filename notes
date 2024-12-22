@@ -903,3 +903,239 @@ return (
 </ApiProvider>
 </Provider>
 );
+
+## Episode - 13
+
+**Types of Testing (Developer)**
+
+1. **Unit Testing** - Testing components in Isolation
+2. **Integration Testing** - Testing the integration between different components (Like testing the flow of events involving various components. Ex: When searching in input search the cards getting filtered)
+3. **End to End Testing (e2e testing)** - Testing the entire user flow (all the flows), starting from the user entering the application to existing the application.
+
+React Testing Library
+.....................
+All testing libraries (React Testing Library, Angular Testing Library etc..) are build on top of **'DOM Testing Library'**. And this DOM Testing Library uses **'Jest'** internally.
+Jest is a Javascript testing framework. This Jes uses **'Babel'** internally. So you need to install babel dependencies as well
+So Installation steps are:
+..........................
+
+1. yarn add -D @testing-library/react **(Note: -D is same as --save-dev)**
+2. yarn add -D jest
+3. yarn add --dev babel-jest @babel/core @babel/preset-env
+4. Configure Babel (babel.config.js)
+5. Configure Parcel config file (.parcelrc) to disable default babel transpilation
+6. Jest configuration (npx jest --init => This will create jest.config.js file for us)
+7. Install jsdom library (jest-environment-jsdom)
+8. Install @babel/preset-react - to make jsx work in test cases
+9. Include @babel/preset-react inside babel.config.js
+10. Install @testing-library/dom and @testing-library/jest-dom - yarn add -D @testing-library/dom yarn add -D @testing-library/jest-dom
+11. Add /coverage in .gitignore
+
+**NOTE** - Because the Parcel internally uses Babel, when you create babel.config.js file, it will overlap/conflict with the babel.config.js file of parcel (that is with parcel's babel configuration). So to make this work, you need to tell parcel to not use its babel configuration, but to use our babel configuration from now on.
+To tell this to Parcel, you need to make changes in parcel configuration, that is in .parcelrc file. You can find this in Parcel documentaion regarding what changes you need to make. In short create .parcelrc file and add below code.
+{
+"extends": "@parcel/config-default",
+"transformers": {
+"\*.{js,mjs,jsx,cjs,ts,tsx}": [
+"@parcel/transformer-js",
+"@parcel/transformer-react-refresh-wrap"
+]
+}
+}
+
+When you install Jest, it will ask you to choose the environment while installing. Choosing between node or jsdom (browser-like). You need to choose jsdom.
+jsdom parses and runs the HTML just like a browser. You need some environment to run the testing and jsdom serves this purpose.
+
+Jest will try to match below file patterns to run the tests for (Note: - means _ [When saved _ it is automatically getting converted to -])
+testMatch: **/--tests--/**/\_.[jt]s?(x), \*\*/?(\_.)+(spec|test).[tj]s?(x) - 0 matches
+
+That means whatever files you create under --test-- with **.test.js or **.spec.js will be considered as test files. Else you need to name the files as **.test.js or **.spec.js even outside of --test--
+
+Sample test for a javascript function
+.....................................
+import { sum } from "../sum";
+
+test("Sum function should calculate the sum of two numbers", () => {
+const result = sum(3, 4);
+
+//This is called as Assertion
+expect(result).toBe(7);
+});
+
+**Unit Testing**
+................
+
+**NOTE:** Whenever you are testing a UI component in React, first you need to render that component inside **jsdom**. You can do that using 'render()' function from @testing-library/react. Whatever is rendered in jsdom, you can get access to that using 'screen' object from @testing-library/react again.
+
+import { render, screen } from "@testing-library/react";
+import Contact from "../Contact";
+
+test/it("Should load Contact component", () => {
+render(<Contact />);
+const heading = screen.getByRole("heading");
+expect(heading).toBeInTheDocument();
+});
+
+When you run this it will fail saying - jsx is not enabled. To enable this you need to add @babel/preset-react. So install '@babel/preset-react' and include it inside babel.config.js like this - ["@babel/preset-react", { runtime: "automatic" }]. This helps the jsx code to be converted to normal html code that jsdom can understand.
+
+Now when you run 'yarn test', it will again fail saying - toBeInTheDocument is not a function. For this to work you need to install - @testing-library/dom and @testing-library/jest-dom
+
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import Contact from "../Contact";
+
+test/it("Should load Contact component", () => {
+render(<Contact />);
+const heading = screen.getByRole("heading");
+expect(heading).toBeInTheDocument();
+});
+
+screen.getByRole("text"); - this return a React element/Virtual DOM node/React fiber node/ For example, for an input element it will return HTMLInputElement{} object
+
+Add /coverage in .gitignore
+
+**Note:** There are 3 steps in testing
+
+1. Render something - render()
+2. Query something - screen.getByRole()
+3. Assert something - expect().toBeInTheDocument()
+
+import Header from "../Header";
+
+it("Should load Header component with a login button", () => {
+render(<Header />);
+});
+
+**NOTE:** Above test fails at useSelector() which is from 'react-redux'. This is because jsdom will understand React,javascript and now jsx after babel, but it does not understand redux. To resolve this, you need to provide Redux store to the Header. That is, you need to wrap <Header/> within <Provider> which comes from react-redux.
+
+import { render } from "@testing-library/react";
+import { Provider } from "react-redux";
+import Header from "../Header";
+import appStore from "../../utils/appStore";
+
+it("Should load Header component with a login button", () => {
+render(
+<Provider store={appStore}><Header /></Provider>
+);
+});
+
+Now when you run this, it will again fail at the <Link> component because this is not React or Javascript. It came from 'react-router-dom'. For this to be resolved, you need to wrap it inside <BrowserRouter> component from 'react-router-dom'.
+
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+import Header from "../Header";
+import appStore from "../../utils/appStore";
+
+it("Should load Header component with a login button", () => {
+render(
+<BrowserRouter>
+<Provider store={appStore}>
+
+<Header />
+</Provider>
+</BrowserRouter>
+);
+//const loginButton = screen.getByRole("button");
+//const loginButton = screen.getByText("Login");
+//If there are multiple buttons
+const loginButton = screen.getByRole("button", name: "Login");
+expect(loginButton).toBeInTheDocument();
+});
+
+**Note:** To test a click event, we use 'fireEvent' from '@testing-library/react' like below:
+it("Should change login button to logout on click", () => {
+render(
+<BrowserRouter>
+<Provider store={appStore}>
+
+<Header />
+</Provider>
+</BrowserRouter>
+);
+
+const loginButton = screen.getByRole("button", { name: "Login" });
+fireEvent.click(loginButton);
+const logoutButton = screen.getByRole("button", { name: "Logout" });
+expect(logoutButton).toBeInTheDocument();
+});
+
+**Integration testing**
+
+import { render } from "@testing-library/react";
+import Body from "../Body";
+it("Should render the Body component", () => {
+render(<Body />);
+});
+
+When you run above test it will fail saying - 'fetch is not defined'. This is because jsdom dosen't understand what is fetch. Fetch is a browser's function. So to make it work, we need to mock the fetch.
+
+import { render } from "@testing-library/react";
+import Body from "../Body";
+import MOCK_DATA from "../mocks/mockResListData.json";
+
+global.fetch = jest.fn(() => {
+return Promise.resolve({
+json: () => {
+return Promise.resolve(MOCK_DATA);
+},
+});
+});
+it("Should render the Body component", () => {
+render(<Body />);
+});
+
+Here global refers to the global object of the jsdom. So we are creating a global fetch object and assigning it a function by doug global.fetch=jest.fn(). This is because jsdom dosen't have fetch of it own by default.
+
+NOTE: Add "watch-test": "jest --watch" in you package.json script to run test on save just like HMR
+
+Now this will give a warning saying to wrap our component inside **act()** fucntion. This is because whenever we are doing async operations or doing state updates, we need to wrap the render() inside act() function. This 'act' comes from 'react-dom/test/utils'
+
+You can also search by data-testid. **Remember that 'i' should be small, then only jest will be able to read it**
+
+Search.test.js
+..............
+
+import { render, screen, fireEvent } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+import Body from "../Body";
+import MOCK_DATA from "../mocks/mockResListData.json";
+
+global.fetch = jest.fn(() => {
+return Promise.resolve({
+json: () => {
+return Promise.resolve(MOCK_DATA);
+},
+});
+});
+it("Should Search restaurants list for burger text input", async () => {
+await act(async () =>
+render(
+<BrowserRouter>
+
+<Body />
+</BrowserRouter>
+)
+);
+const cardsBeforeSearch = screen.getAllByTestId("res-card-test-id");
+expect(cardsBeforeSearch.length).toBe(20);
+const searchInput = screen.getByTestId("search-input-test-id");
+const searchBtn = screen.getByRole("button", { name: "Search" });
+fireEvent.change(searchInput, { target: { value: "burger" } });
+fireEvent.click(searchBtn);
+
+//Screen should load one card
+const cardsAfterSearch = screen.getAllByTestId("res-card-test-id");
+expect(cardsAfterSearch.length).toBe(1);
+});
+
+**Note:** While doing integration testing, we might need to work with multiple components which may not have parent-child relationship. So in that case you need to render both the components like below:
+render(
+<Provider store={appStore}>
+<RestaurantMenu />
+<Header />
+</Provider>
+)

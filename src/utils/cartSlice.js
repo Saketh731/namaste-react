@@ -23,7 +23,7 @@ const cartSlice = createSlice({
       state.items.length = 0;
 
       //To see the current state use 'current(state)', which (current) comes from @reduxjs/toolkit. You can't directly do console.log(state); because redux hides the state behind a proxy
-      console.log(current(state));
+      // console.log(current(state));
 
       //This dosen't work, because IMMER works in a certain way. This is just changing the reference of the state and not changing the current state, so IMMER won't be able to find the differece as there is no state change and Redux won't be able to get that change. In deeper sense, state will become a local variable with lets say ["pizza"] coming from Redux. Now if we assign it to {} the we are not actually changing the ["pizza"] array but changing the reference of the local variable to {}. So technically there is no change in the state and Immer will understand that nothing changed
       //state={items: ["Saketh"]}

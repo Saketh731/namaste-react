@@ -1,7 +1,7 @@
 import IMAGE_URL from "../utils/constants";
 
 export default RestaurantCard = ({ resData }) => {
-  console.log("RestaurantCard rendered");
+  // console.log("RestaurantCard rendered");
   const {
     name,
     cuisines,
@@ -11,8 +11,13 @@ export default RestaurantCard = ({ resData }) => {
     sla,
   } = resData?.info;
 
+  // console.log(resData);
+
   return (
-    <div className="m-4 p-4 w-[250px] bg-gray-100 rounded-lg hover:bg-gray-300">
+    <div
+      data-testid="res-card-test-id"
+      className="m-4 p-4 w-[250px] bg-gray-100 rounded-lg hover:bg-gray-300"
+    >
       <img className="rounded-lg" src={IMAGE_URL + cloudinaryImageId} />
       <h3 className="font-bold py-4 text-lg">{name}</h3>
       <h4>{cuisines?.join(", ")}</h4>

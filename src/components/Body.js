@@ -5,10 +5,10 @@ import ShimmerCards from "./ShimmerCards";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import { withPromotedLabel } from "./RestaurantCard";
 import UserContext from "../utils/UserContext";
-import Data from "./Data";
+// import Data from "./Data";
 
 const Body = () => {
-  console.log("Body rendered");
+  // console.log("Body rendered");
   const [listOfRestaurants, setListOfRestaurants] = useState([]);
   const [filteredListOfRestaurants, setFilteredListOfRestaurants] = useState(
     []
@@ -21,7 +21,7 @@ const Body = () => {
   const { loggedInUser, setUserName } = useContext(UserContext);
 
   useEffect(() => {
-    console.log("useEffect called - 3");
+    // console.log("useEffect called - 3");
     fetchRestaurentsData();
   }, []);
 
@@ -37,7 +37,7 @@ const Body = () => {
     setFilteredListOfRestaurants(restaurants);
   };
 
-  console.log("Outside of render function - 1");
+  // console.log("Outside of render function - 1");
 
   if (onlineStatus === false) {
     return (
@@ -49,10 +49,11 @@ const Body = () => {
     <ShimmerCards />
   ) : (
     <div className="body">
-      {console.log("Component rendered - 2")}
+      {/* {console.log("Component rendered - 2")} */}
       <div className="flex">
         <div className="m-4 p-4">
           <input
+            data-testid="search-input-test-id"
             type="text"
             className="border border-solid border-black"
             value={searchText}

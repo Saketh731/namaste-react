@@ -13,6 +13,7 @@ export default ItemList = ({ items }) => {
     <div>
       {items?.map((item) => (
         <div
+          data-testid="food-items-test-id"
           key={item?.card?.info?.id}
           className="p-2 m-2 border-gray-200 border-b-2 text-left flex justify-between"
         >

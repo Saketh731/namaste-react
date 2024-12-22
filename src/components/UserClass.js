@@ -22,22 +22,22 @@ class UserClass extends React.Component {
     // this.timer = setInterval(() => {
     //   console.log("NAMASTE REACT");
     // }, 1000);
-    console.log("Component Did Mount");
+    // console.log("Component Did Mount");
     const data = await fetch("https://api.github.com/users/saketh731");
     const json = await data.json();
-    console.log("json", json);
+    // console.log("json", json);
     this.setState({
       userInfo: json,
     });
   }
 
   componentDidUpdate() {
-    console.log("Component Did Update");
+    // console.log("Component Did Update");
   }
 
   componentWillUnmount() {
     // clearInterval(this.timer);
-    console.log("Component Will Unmount");
+    // console.log("Component Will Unmount");
   }
 
   render() {

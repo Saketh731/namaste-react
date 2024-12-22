@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 const Header = () => {
   const [btnName, setBtnName] = useState("Login");
   const { onlineStatus } = useOnlineStatus();
-  console.log("Header rendered");
+  // console.log("Header rendered");
 
   // console.log(
   //   "Header component re-renders and this console gets executed/printed after every state change"
@@ -22,7 +22,7 @@ const Header = () => {
   // Never write it like this as this impacts performance because this is like subscribing to the entire store. Whenever the store updates our component will get effected
   // const store = useSelector((state) => state);
   // const cartItems = store.cart.items
-  console.log(cartItems);
+  // console.log(cartItems);
   return (
     <div className="flex justify-between bg-pink-100 shadow-lg mb-2 sm:bg-yellow-50 lg:bg-blue-50">
       <div className="logo-container">
@@ -44,8 +44,7 @@ const Header = () => {
             <Link to="/grocery">Grocery</Link>
           </li>
           <li className="px-4 font-bold">
-            {" "}
-            <Link to="/cart">Cart</Link> ( {cartItems?.length} items )
+            <Link to="/cart">Cart ( {cartItems?.length} items )</Link>
           </li>
           <button
             className="login-btn"

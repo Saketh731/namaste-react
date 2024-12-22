@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 
 const User = ({ name }) => {
   useEffect(() => {
-    console.log("Mount");
+    // console.log("Mount");
     const timer = setInterval(() => {
-      console.log("NAMASTE REACT Functional component");
+      // console.log("NAMASTE REACT Functional component");
     }, 1000);
     return () => {
-      console.log("Unmount");
+      // console.log("Unmount");
       clearInterval(timer);
     };
   }, []);
-  console.log("Render");
+  // console.log("Render");
   const [count] = useState(0);
   const [count2] = useState(2);
   return (

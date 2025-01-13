@@ -1136,6 +1136,83 @@ expect(cardsAfterSearch.length).toBe(1);
 render(
 <Provider store={appStore}>
 <RestaurantMenu />
+
 <Header />
 </Provider>
 )
+
+## Other Hooks
+
+==============
+
+useMemo()
+.........
+As the name says it is used for Memoising/Caching the result of a heavy calculation so that on every render it will not re-calculate the same value until and unless its dependency state changes which changes the result.
+Example: In below example whenver you change the input number it calculated the nth prime which becomes heavey if itis huge number and lags. When you enter heavy number screen lags. Now when you try to change the theme, still the screen lags, thiugh it shouldn't. This is becomes when a theme state changes, the component is called again and the findNthPrime() is execute again. Thought the number didn't change, still you are recalculating nth prime with same number which is not needed.
+So you can cache the result and use the cached result whenever component re-renders (called again) and when there is no change in input state, using useMemo hook.
+
+====================
+
+const Demo = () => {
+const [text, setText] = useState(0);
+const [isDarkTheme, setIsDarkTheme] = useState(false);
+// Heavy operation
+const prime = useMemo(() => findNthPrime(text), text);
+return (
+
+<div
+className={
+"m-4 p-2 w-96 h-96 border border-black " +
+(isDarkTheme && "bg-gray-900 text-white")
+} >
+<button onClick={() => setIsDarkTheme(!isDarkTheme)} > Toggle </button>
+<input
+className="border border-black w-72 p-2 text-black"
+type="number"
+value={text}
+onChange={(e) => setText(e.target.value)}
+/>
+<h1>nth Prime : {prime}</h1>
+</div>
+);
+};
+
+export default Demo;
+
+=======================
+
+React.memo()
+............
+Whenever a parent component re-renders(called again), all its child components will be executed again even if there is no change in the child components.
+So to optimize this, before exporting a component, if you wrap it in React.memo() like below, then the component will not re-render (Not even called) if there is no change in the props passed to it.
+NOTE: React.memo() is not a hook, it is a Higher Order Function.
+NOTE: I fyou re-rendering logic of child component is not expensive and there is not visible lag then no need to use React.memo only
+
+const Component = ()=>{return <div></div>}
+export default React.memo(Component);
+
+useCallback()
+.............
+There is a drawback in React.memo(). It will know if the props are changed, by comparing the current prop values with previous. Now if a function is passed as a prop then it is different, because it will be a reference compations instead of value. Whenever a component is re-renderd(re-executed), when state values are same and passed as props, those can be compared by value. But if functions are passed as props, those will be compared by reference. And when a component is re-executed then its functions will get a new reference and when it is compared with old reference, the child component will consider as a new props and the Child component will get re-rendered even after using React.memo(); To overcome this issue we use useCallback() hook, which will memoise the callback function and return the same callback function (reference) when there is no change in the dependency. If the dependency changes then it will return a new callback function (new reference).
+NOTE: Even treat object/arrays same as functions, because if they work on reference based.
+NOTE: useCallback() is always/mostly used with React.memo()
+
+const ParentComponent = () => {
+const [value, setValue] = useState(null);
+const func = useCallback(() => {
+//some code using value
+value = value + 1;
+},[value])
+
+return (
+<ChildComponent func={func}/>
+)
+}
+
+useRef()
+........
+
+- useRef is used to retain a value across all re-renders (re-calling a component) unlike let/const. When you update state/props or revisit same component again, all the let/const will be re-initialised as the component is executed again and a new execution context is created.
+- Lets consider an Example-1: You need a value for some calculation and you don't need to render that. This value changes/increments on a buttona nd used for calculation. Now when state updates the value will be reinitialized to 0 if use assign it to let/const variable. As you need it for calculations you need to retain in on every re-renders, so you store it in useRef.
+- Another Example-2: Lets say you created a setInterval on component mount (in useEffect) and need to stop that intervel on a button click. for that you need to assign the setInterval to a timer variable and do clearInterval(timer). If you assign that timer to a let/const => let timer = setInterval(), the value will be reitialized to its intial value if any state updates. So you need to store this also in a useRef.
+- const ref = useRef(0) stores it like this in an object => ref = { current: 0 }

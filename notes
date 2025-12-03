@@ -444,7 +444,7 @@ In any component first the constructor will be called and the after the render m
 Here we expect Child1 componentDidMount to be called after Child1 render is called. But as there are 2 phases (render phase and commit phase). React first renders (means executes those components and runs reconciliation algorithm) parent component and than all its child components and after finishing renders, it then starts the commit phase where it updates the actual DOM from child to parent and then calls the componentDidMount methods of those two child methods after they are mounted onto the browser and then calls componentDidMount method of the Parent. React does this wat to optimise the number of DOM updates and improve the performance of App. Instead of updating DOM 3 times, it just updated it once after rendering (executing) all components to improve the performance. So here React is batching the render and commit phase of all the child components. React is doing this because DOM manipulation is the most expensive operation and React is trying to optimise by doing this batching mechanism.
 Note: Batcing the render phase means - React builds virtual DOM trees (js objects) of all child components and then attaches those trees to the parent virtual DOM tree (js object).
 Batcing the commit phase means - React now commits this entire DOM tree (including parent and children) at once onto the browser (that is, by updating the real DOM).
-This is why React is fast - First is, instead of changing the entire DOM tree, it just compares it with virtual DOM and sees what has been changed exactly and only does that part of changes to DOM. Second is, instead of manu=ipulating DOM multiple times, React just batches all the commits and does a single commit (real DOM manipulation) to the DOM.
+This is why React is fast - First is, instead of changing the entire DOM tree, it just compares it with virtual DOM and sees what has been changed exactly and only does that part of changes to DOM. Second is, instead of manipulating DOM multiple times, React just batches all the commits and does a single commit (real DOM manipulation) to the DOM.
 
 1. constructor()
 2. render()
@@ -605,7 +605,7 @@ You need to create tailwind.config.js file and .postcssrc file for post css conf
 **Advantages**
 
 1. Faster development. Makes life easy
-2. Light weight. That means, when parcel/webpack bundles out App it only includes those Tailwind styles whicha re being used in components and does not bring all those 1000's of unused styles from Tailwind package. This is a very very major advantage because it reduces the bundle size. In regular App development using normal CSS, we knowingly or unknowingly repeat same css stylings at multiple place, it can be as simple as 'margin: 10px'. This will increase our bundle size and Tailwind helps to overcome this issue.
+2. Light weight. That means, when parcel/webpack bundles out App it only includes those Tailwind styles which are being used in components and does not bring all those 1000's of unused styles from Tailwind package. This is a very very major advantage because it reduces the bundle size. In regular App development using normal CSS, we knowingly or unknowingly repeat same css stylings at multiple place, it can be as simple as 'margin: 10px'. This will increase our bundle size and Tailwind helps to overcome this issue.
 3. You can style complex features like on hover styles, dark mode etc.. very easily with some simple classes using Tailwind.
 
 ## Episode - 11
@@ -1216,3 +1216,269 @@ useRef()
 - Lets consider an Example-1: You need a value for some calculation and you don't need to render that. This value changes/increments on a buttona nd used for calculation. Now when state updates the value will be reinitialized to 0 if use assign it to let/const variable. As you need it for calculations you need to retain in on every re-renders, so you store it in useRef.
 - Another Example-2: Lets say you created a setInterval on component mount (in useEffect) and need to stop that intervel on a button click. for that you need to assign the setInterval to a timer variable and do clearInterval(timer). If you assign that timer to a let/const => let timer = setInterval(), the value will be reitialized to its intial value if any state updates. So you need to store this also in a useRef.
 - const ref = useRef(0) stores it like this in an object => ref = { current: 0 }
+
+Crisp Notes
+...........
+
+## Episode - 1 & 2 ## NPM and Bundler
+
+npm init - brings npm to code (package.json created in JSON format)
+2.8.3 - major.minor.patch. ^2.8.3 - upgrade till minor version. ~2.8.3 - upgrade till patch version
+npm - manages dependecies. package.json - configuration for npm. package-lock.json - Stores exact version
+bundlers (dev dependency) - webpack, vitt, parcel etc..
+npm - install, npx - execute
+
+<script type="module" src="./App.js"></script>. // type="module" to tell browser that it's a module and not just a script file. "import react from 'react'" will work
+
+Parcel stores cache file in .parcel-cache, so on save, builds will be faster
+Bundler offers - HMR, Caching, Minification, Image Optimization, Compressing, Code Splitting, Diiferential Bundling, Tree Shaking
+On bundling - npx parcel build index.html - It minifies and put HTML/CSS/JS minified files under this 'dist' folder
+.gitignore - node_modules, .parcel-cache, dist (as these can be generated at the server)
+
+## Episode - 3 ##React Core
+
+React - Core features of react. ReactDOM - Interact with DOM and converts React elements to DOM elements and adds them to the DOM by replacing the root element
+JSX and React are seperate. React is tough to write React.createElement. Babel (Transpiler)(part of Bundler Parcel) converts JSX to React.createElement which React understands and then to JS objects which browser understands.
+Single line JSX => <h1></h1>. Multi line JSX => (<h1></h1>)
+React Components - 1. Class based components 2. Functional Components (Camelcase else error by React)
+Functional Component - Normal JS function that return piece of JSX (Only one ReactElement)
+Render ReactElement to browser - root.render(heading). Render ReactElement to browser - root.render(<HeadingComponent />). // const root = ReactDOM.createRoot(#id)
+Cross Site Scripting - const data = api.hackerAPI(); <h1>{data}</h1>. Hacker can inject any JS code to steam cookies etc.. => JSX will first sanitise the data
+
+## Episode - 4 ##Reconciliation
+
+Cloudinary - CDN where we can store APP images
+Virtual DOM - copy of an actual DOM. Virtual DOM is rendered to Real DOM using => root.render(<Component />)
+Reconciliation - React uses Diffing algorithm to find the difference by comparing Actual DOM with Real DOM, and modify only those differences in Real DOM.
+Unique key for list of Elements - If not provided, when new elements come in between, react will not know where to place the element and re-renders it completely.
+If there are list of elements and an element gets added at last, then reconciliation algotithm compares each node/item with Real DOM can easily identify new added item at last and justs adds only that to Real DOM instead of complete render. But if the item gets added at begining, then first comparision itself fails and complete re-render happens. Hence, uniqueId is required.
+
+## Episode - 5 && Episode - 6 ## React Hooks
+
+Default export - import Component from "../src/Component" (can export only 1 default export)
+Named export - import {Component} from "../src/Component" (can export more than 1 named export)
+Without useState, any changes will just be in JS file with let/const. useState helps updating DOM. Any Framework/React keeps sync between Data Layer | UI Layer
+Hooks (named functions) - Normal JS function with special abilities.
+Whenever a state variable updates, React re-renders the component. React is fast because of efficient & faster DOM manipulations
+useEffect(()=>{},[]) => Executes after component in mounted. console.logs => First in body, Second in return, Third in useEffect. ( as code executes line by line)
+useEffect gets triggered after every re-render, but the calling of callback function inside it depends on dependency array.
+[] -> Callback function called only on first render.
+[dep] -> Callback function called on re-renders where dep is changed
+No [] -> Callback function called on every re-render.
+When you update a state variable -> Component re-renders -> Reconciliation algorithm triggered -> Executes code line by line -> Calls return -> Generates Virtual DOM -> Finds Difference -> Updates only the Difference in Real DOM -> useEffect executed
+JS expression -> Resolves to a value. Ex: const a = 5; const b = getValue(); // 5 and getValue() are expressions
+JS statement -> Dose not resolve to a value. Ex: if, while etc
+You cannot keep a statement in place of expression like, console.log(const a); //Error
+Note: We cannot use async within useEffect callback function
+
+## Episode - 7 #react-router-dom
+
+createBrowserRouter - To create routing config by passing list of paths
+const appRouter = createBrowserRouter([
+{
+path: "/",
+element: <AppLayout />,
+errorElement: <Error />,
+children: [{
+path: "/",
+element: <Body />,
+},
+{
+path: "/about",
+element: <About />,
+}]
+},
+{
+path: "/about",
+element: <About />,
+},
+]);
+RouterProvider - To provide routing config to our app. We pass router config as prop to it, This returns specified component for a given path.
+Ex: root.render(<RouterProvider router={appRouter} />);
+Outlet - To show children of a particular Route. Inside AppLayout component, just do <Outlet />
+Link - To navigate to other Routes/Paths without Page reload. Ex : <Link to="/about">About Us</Link>. //This is why React applications are Single Page Applications
+Two types of Routing - 1. Server Side Routing (New tab pages, reloads, multiple HTML pages) 2. Client Side Routing (Single Page Apps, Single HTML page, no reload)
+
+## Episode - 8 ##Class based component
+
+Class based component
+class UserClass extends React.Component {
+constructor(props) {
+super(props)
+}
+render() {
+return (<></>)
+}
+}
+export default UserClass;
+
+super() - calls Parent class constructor. Doing this it will be able to access all parent calss variables, methods, instances using our local instance only (this)
+Update state - this.setState({count: this.state.count + 1}); //Though in functional components we have multiple states, react will put all those in single big state
+// This only updates count key in the entire state object and does not change the other states.
+First contructor() get called -> Next render(). If has parent then, First parent contructor() -> parent render() -> Child contructor() -> Child render()
+
+1. Render Phase - constuctor(), render() 2. Commit Phase - React updates the Real DOM and refs, next componentDidMount() is called
+   Parent contructor() -> Parent render() -> Child contructor() -> Child render() -> Child componentDidMount() -> Parent componentDidMount()
+   Mounting Phase:
+1. Parent constructor is called
+1. Parent render is called
+1. Child1 constructor is called
+1. Child1 render is called
+1. Child2 constructor is called
+1. Child2 render is called
+1. Child1 componentDidMount is called
+1. Child2 componentDidMount is called
+1. Parent componentDidMount is called
+   // This is because of the 2 Phases. React first renders all components and then create Virtual DOM tree for each component and attaches all virtual DOMs to
+   a Parent DOM, compares and finds the difference and then does the commit phase to commit the differences to the Real DOM which makes it fast. This is called Batching <=> useEffect(()=>{},[])
+   Updating Phase:
+   state update -> render() -> recociliation -> componentDidUpdate(). // Constructor methos is not called in updation cycle. <=> useEffect(()=>{}
+   componentDidUpdate(prevProps, prevState){
+   if(this.state.count !== prevState.count || this.state.count2 !== prevState.count2){ }
+   }
+   <=> useEffect(()=>{},[count,count1])
+   Unmounting Phase
+   When component removed from Real DOM -> componentWillUnmount() is called. Used to clear mess like events, setTimeOut etc.. which needs to be removed from memory
+   useEffect(()=>{
+   return () => {}
+   },[])
+
+   Note: On every state update even the componentWillUnmount will get called because after every state update, before re-render happens, the current component gets unmounted and re-rendered again
+
+Summing Up:
+1.constructor() 2.render() 3.componentDidMount() 4.componentDidUpdate() 5.componentWillUnmount()
+Mount Phase -> constructor() -> render() -> componentDidMount()
+Update Phase -> render() -> componentDidUpdate()
+Unmount Phase -> componentWillUnmount()
+
+## Episode - 9 **Chunking / Code Splitting / Lazy Loading / Dynamic Import / Dynamic bundling / On Demand Loading**
+
+Single Responsibility Principle - Each component should have a single responsibility. i.e Create component (return JSX). Fetch data, managing state should be
+moved to a custom hook. Makes your code more readable, maintainable and testable.
+If you go with a single bundle, sometimes it can be huge. So you can split the bundles (like Instamart, Dineout), for the bundles to loaded on demand
+import {lazy} from 'react'l
+const Grocery = lazy(()=>import("./components/Grocery")); // This will make an API call to fetch Grocery bundle (Check in Network tab - fetch call)
+How server is able to send the new bundle? - Grocery.js bundle is created in dist folder. dist is create at server with 'npm run build'. All different bundle
+files will be created at build step itself. Based on the need server sends these bundles.
+When we move to Grocery page, that bundle is yet to load and code is not there so react suspends the component throwing error in console. To overcome:
+<Suspense fallback={<h1>Fallback Component</h1>}><Grocery /></Suspense>
+Code Splitting in 3 lines
+
+1. import {lazy, Suspense} from 'react';
+2. const Grocery = lazy(()=>import("/components/Grocery"))
+3. <Suspense fallback={<h1>Fallback Component</h1>}><Grocery /></Suspense>
+   Advantages - Fast loading time, Improved Performance, Optimized Resource Usage, Better Mobile Performance
+   Disadvantages - Complex Configuration (if not provided by bundler by default), Initial Loading Delay, Testing Complexity
+
+## Episode - 10 ## Tailwind
+
+Tailwind uses postcss for transforming css with Javascript (~to use css along with javascript)
+Disadvantages - Increases code length, Your unique style may not be available, Reusability of classes is not there, repeating of same styles, cannot override
+third party styles, cannot increase css specifity, cannot target all child elements and write one style
+Advantages - Faster development, Light weight (includes only those Tailwind styles in the build which are being used. In regular Apps, with normal CSS,
+when we repeat as simple as 'margin: 10px', this will increase the bundle and Tailwind overcomes this issue), can style complex features like on hover styles, dark mode etc.. with some simple classes
+
+## Episode - 11 **Context API**
+
+Higher Order Components - Takes a component as an argument and returns that component by adding extra abilities to it. This way people who want to use
+normal component can import and use it. People who want the Special compoent can use it individually.
+Controlled Components vs Uncontrolled component: When state is lifted up to the Parent component, then child component is called Controlled component as it is being controlled by the Parent component. If child controls its own state then it is Uncontrolled component
+
+Context API - To avoid props drilling. Create context using -> 'createContext()', Consume context using -> 'useContext()'
+Context API in Functional Components:
+Ex: const UserContext = createContext({
+loggedInUser: "Default User",
+});
+Header.js
+.........
+const { loggedInUser } = useContext(UserContext);
+Context API in Class based Components:
+<UserContext.Provider value={{ loggedInUser: user, setUserName: setUserName }}> // setUserName is used to update the context state
+<UserContext.Consumer>
+{(data) => <div className="font-bold">{data?.loggedInUser}</div>}
+</UserContext.Consumer>
+
+\*\*Major Disadvantage - Whenever a state updates then all the children within UserContext will be re-render, irrespective of whether they are using that state or not
+
+## Episode - 12 **Redux**
+
+Redux - State Management Library
+It has one big Store to store the entire applications state. That one store has multiple slices to store relavent states like User Slice, Cart Slice etc..
+Store -> Multiple Slices
+Write Data to Redux Store:
+Click/Any event => [Dispatch] an [Action] => corresponding [Reducer] function called => [Action] is called <=> Updates [Slice] of [ReduxStore].
+// Every [action] is tied to its [reducer]
+Read Data from Redux Store:
+[Selector] (A component can subscribe to the store so that it gets updated/re-rendered when that subscribed state changes)
+
+Code steps:
+
+1. Install @reduxjs/toolkit and react-redux
+2. Build our store ->
+   const appStore = configureStore({
+   reducer: {
+   cart: cartReducer,
+   }
+   });
+   export default appStore;
+3. Provide the store to the app -> <Provider store={appStore}><App></Provider>
+4. Build Slice:
+   import { createSlice } from "@reduxjs/toolkit";
+   const cartSlice = createSlice({
+   name: "cart",
+   initialState: {
+   items: [],
+   },
+   reducers: {
+   addItem: (state, action) => {
+   state.items.push(action.payload); // Previously mutating state is not valid. But in readuxToolkit, it uses Immer which identifies the difference and
+   return that difference statem keeping it Immutable behind the scenes
+   },
+   clearCart: (state) => {
+   state.items.length = 0;
+   console.log(current(state)); // To see state use 'current(state)', (current) comes from @reduxjs/toolkit. You can't directly do console.log(state).
+   //state={items: ["James"]} // This won't wwork as this is just changing reference not changing the actual state, so IMMER can't find different. Instead
+   you can return the object like this - return {items: ["James"]};
+   },
+   },
+   });
+   export const { addItem, clearCart } = cartSlice.actions;
+   export default cartSlice.reducer;
+   // Because createSlice({}) will return an object like this - {actions:{}, reducer:()=>{}}
+5. Read the data using [Selector] / Subscribing to the store (slice of a store):
+   const cartItems = useSelector((state) => state.cart.items); // useSelector gives access to whole store but we are subscribing only to a slice of it
+   // const store = useSelector((state) => state); // Never write like this as it effects the performance
+6. dispatch (action):
+   import { useDispatch } from "react-redux";
+   import { addItem } from "../utils/cartSlice";
+   const dispatch = useDispatch();
+   const someFunc(() => dispatch(addItem("pizza"));) // An action is a plain javascript object. i.e addItem("pizza") returns {payload: "pizza"}
+
+Use useContext - For smaller-scale state management needs and when there is no need to share state extensively across aplication
+Use Redux - For complex state management applications with large state that needs to be share across many components. Also when you need middleware for
+advanced features like asynchronous actions.
+
+Middleware - They intercept in between the actions before they reach reducer. They modify the actions on the way out.
+
+RTK QUER:
+export const productsAPI = createApi({
+reducerPath: "productsAPI",
+baseQuery: fetchBaseQuery({ baseUrl: "https://dummyjson.com/" }),
+endpoints: (builder) => ({
+getAllProducts: builder.query({
+query: () => "products",
+}),
+getProduct: builder.query({
+query: (product) => `product/search?q=${product}`,
+}),
+}),
+});
+
+## Other Hooks
+
+useMemo() - Heavy computaion dont want to get executed on every re-render. const prime = useMemo(() => findNthPrime(text), text);
+React.memo() - When Parent Rerenders child also re-renders. Wrap in React.memo(ChildComp), this will make sure child only re-renders when props changes.
+useCallback() - Drawback of React.memo is when you pass function to child, its reference is passed. On every re-render reference changes, so
+React.memo wont work. So you wrap the function in useCallback like - const func = useCallback(() => {value = value + 1;},[value]); The reference changes only when value dependency changes.
+Every re-render new Execution context is created and assigns new refs to let/const.
+useRef() - useRef() value is retained across all re-renders. Ex: Storing setTimeout timer in ref. ref = useRef(0); // ref = { current: 0 }
